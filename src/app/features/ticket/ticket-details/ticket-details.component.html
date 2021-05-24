@@ -1,4 +1,42 @@
+<p>ticket-details works!</p>
 
+<form *ngIf="users else spinner" class="example-form" [formGroup]="ticketForm">
+    <mat-form-field class="example-full-width">
+        <mat-label>Ticket Id</mat-label>
+        <input readonly matInput  formControlName="id">
+    </mat-form-field>
+
+    <mat-form-field class="example-full-width">
+        <mat-label>Status</mat-label>
+        <input matInput formControlName="completedString">
+    </mat-form-field>
+
+    <mat-form-field appearance="fill">
+        <mat-label>Favorite food</mat-label>
+        <mat-select formControlName="author">
+            <mat-option *ngFor="let user of users" [value]="user.id">
+                {{user.name}}
+            </mat-option>
+        </mat-select>
+    </mat-form-field>
+
+    <mat-form-field class="example-full-width">
+        <mat-label>Description</mat-label>
+        <textarea matInput formControlName="description"></textarea>
+    </mat-form-field>
+
+    <div class="example-button-row">
+        <button type="submit" mat-raised-button color="primary" (click)="assignTicket()">Assign Ticket</button>
+        <button mat-raised-button color="warn">Remove Ticket</button>
+    </div>
+
+</form>
+
+<ng-template #spinner>
+    <div class="spinner">
+        <mat-spinner diameter="50" strokeWidth="5"></mat-spinner>
+    </div>
+</ng-template>
 
 
 
