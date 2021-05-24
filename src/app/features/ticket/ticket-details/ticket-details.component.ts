@@ -1,11 +1,11 @@
-import { Component, OnInit } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
-import { combineLatest } from 'rxjs';
-import { FormattedTicket, TicketListComponent } from '../ticket-list/ticket-list.component';
-import { BackendService } from '@core/services/backend.service';
-import { map } from 'rxjs/operators';
-import { FormBuilder, FormGroup } from '@angular/forms';
-import { User } from '@core/models/interfaces/user.interface';
+import {Component, OnInit} from '@angular/core';
+import {ActivatedRoute} from '@angular/router';
+import {combineLatest} from 'rxjs';
+import {FormattedTicket, TicketListComponent} from '../ticket-list/ticket-list.component';
+import {BackendService} from '@core/services/backend.service';
+import {map, tap} from 'rxjs/operators';
+import {FormBuilder, FormGroup} from '@angular/forms';
+import {User} from '@core/models/interfaces/user.interface';
 import * as _ from 'lodash';
 
 @Component({
@@ -35,7 +35,7 @@ export class TicketDetailsComponent implements OnInit {
             this.backendService.users(),
             this.backendService.ticket(ticketId).pipe(map(TicketListComponent.formatTicketState))
         ]).subscribe(([users, ticket]) => {
-            const formattedTicket = { ...ticket, author: _.find(users, (user) => user.id === ticket.assigneeId).name }
+            const formattedTicket = {...ticket, author: _.find(users, (user) => user.id === ticket.assigneeId).name}
             this.initTicketForm(formattedTicket)
             this.users = users;
         })
@@ -51,11 +51,26 @@ export class TicketDetailsComponent implements OnInit {
     }
 
     assignTicket(): void {
-        const ticket = this.ticketForm.value
-        this.backendService.assign(ticket.id, ticket.assigneeId).subscribe()
+        const ticketId = this.ticketForm.value.id;
+        const newAuthorId = this.ticketForm.value.author;
+        this.backendService.assignTicket(ticketId, newAuthorId)
+            .pipe(tap(this.resetTicketForm.bind(this)))
+            .subscribe()
     }
-    removeTicket(): void {
-    //    todo
+
+    completeTicket(): void {
+        const ticketId = this.ticketForm.value.id;
+        this.backendService.complete(ticketId, true)
+            .pipe(tap(this.resetTicketForm.bind(this)))
+            .subscribe();
     }
+
+    resetTicketForm(ticket): void {
+        this.ticketForm = undefined;
+        this.users = undefined;
+        this.getTicketDetails(ticket.id);
+    }
+
+
 }
 

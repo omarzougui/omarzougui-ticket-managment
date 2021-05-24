@@ -29,6 +29,18 @@ export class BackendService {
             completed: false,
             assigneeId: 111,
             description: 'Move the desk to the new location'
+        },
+        {
+            id: 2,
+            completed: true,
+            assigneeId: 222,
+            description: 'create PWA'
+        },
+        {
+            id: 1,
+            completed: false,
+            assigneeId: 111,
+            description: 'migrate to angular 12'
         }
     ];
 
@@ -73,9 +85,11 @@ export class BackendService {
         );
     }
 
-    public assign(ticketId: number, userId: number): Observable<Ticket> {
+    public assignTicket(ticketId: number, userId: number): Observable<Ticket> {
         const user = this.findUserById(+userId);
         const foundTicket = this.findTicketById(+ticketId);
+        console.log('abcd', user, foundTicket);
+
 
         if (foundTicket && user) {
             return of(foundTicket).pipe(
@@ -91,7 +105,7 @@ export class BackendService {
 
     public complete(ticketId: number, completed: boolean): Observable<Ticket> {
         const foundTicket = this.findTicketById(+ticketId);
-
+            console.log('complete', ticketId, completed );
         if (foundTicket) {
             return of(foundTicket).pipe(
                 delay(randomDelay()),
